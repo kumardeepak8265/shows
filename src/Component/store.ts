@@ -1,10 +1,4 @@
 import { AnyAction, applyMiddleware, createStore } from "redux";
-import {
-  SHOWS_TYPES_FATCH,
-  SHOWS_TYPES_FATCHED,
-  SHOW_TYPES_FATCH,
-  SHOW_TYPES_FATCHED,
-} from "./actions";
 import { combineReducers } from "redux";
 import { rootSaga, sagaMiddleware } from "./saga";
 import showReducer, { initialShowsState, showState } from "./subreducer";
