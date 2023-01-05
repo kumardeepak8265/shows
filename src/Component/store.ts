@@ -5,20 +5,15 @@ import {
   SHOW_TYPES_FATCH,
   SHOW_TYPES_FATCHED,
 } from "./actions";
-import Show from "./modules";
+import { combineReducers } from "redux";
 import { rootSaga, sagaMiddleware } from "./saga";
 import showReducer, { initialShowsState, showState } from "./subreducer";
 
-export type State = {
-  shows: showState;
-};
-const initalState: State = {
-  shows: initialShowsState,
-};
-function reducer(state = initalState, action: AnyAction) {
-  return { shows: showReducer(state.shows, action) };
-}
+const reducer2 = combineReducers({
+  shows: showReducer,
+});
 
-const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+export type State = ReturnType<typeof reducer2>;
+const store = createStore(reducer2, applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(rootSaga);
 export default store;
