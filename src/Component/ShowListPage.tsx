@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ChangeEvent, FC } from "react";
 import { connect } from "react-redux";
 import { showsFatchAction } from "./actions";
 import Show from "./modules";
@@ -18,7 +18,9 @@ export const ShowListPage: FC<ShowListPageProps> = ({
   if (!shows) {
     return <div>loading...</div>;
   }
-
+  const onhandleClick = (event: ChangeEvent<HTMLInputElement>) => {
+    fatchShow(event.target.value);
+  };
   return (
     <div className=" p-8 h-full bg-gray-400 ">
       <div className="bg-white space-y-4 p-8">
@@ -26,7 +28,7 @@ export const ShowListPage: FC<ShowListPageProps> = ({
           placeholder="SEARCH"
           className="p-2 rounded-md border-2 border-gray-600 w-4/5"
           value={query}
-          onChange={() => fatchShow(event.target.value)}
+          onChange={onhandleClick}
         />
         {shows.map((s) => (
           <ShowRow key={s.id} show={s}></ShowRow>
