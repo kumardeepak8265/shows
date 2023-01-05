@@ -22,11 +22,11 @@ export const ShowListPage: FC<ShowListPageProps> = ({
     fatchShow(event.target.value);
   };
   return (
-    <div className=" p-8 h-full bg-gray-400 ">
+    <div className=" p-8  ">
       <div className="bg-white space-y-4 p-8">
         <input
           placeholder="SEARCH"
-          className="p-2 rounded-md border-2 border-gray-600 w-4/5"
+          className="p-2 rounded-md border-2 border-gray-600 w-full"
           value={query}
           onChange={onhandleClick}
         />

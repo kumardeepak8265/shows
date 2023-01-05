@@ -20,9 +20,6 @@ const ShowDetail: FC<ShowDetailProps> = ({ show, params, dispatch }) => {
     }
   }, [show]);
 
-  if (!show) {
-    return <div>loading</div>;
-  }
   const { name, language, summary } = show;
 
   return (

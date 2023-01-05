@@ -19,7 +19,7 @@ function* showSagafatch(action: AnyAction): Generator<any, any, any> {
   yield put(showFatchedAction(res));
 }
 function* showsSagafatch(action: AnyAction): Generator<any, any, any> {
-  yield delay(2000);
+  yield delay(1000);
   if (!action.payload) {
     return;
   }
