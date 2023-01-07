@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Show from "./modules";
+import Show from "../modules/Show";
 import { Link, useNavigate } from "react-router-dom";
 type ShowRowProps = {
   show: Show;
