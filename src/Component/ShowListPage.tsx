@@ -1,8 +1,10 @@
 import { ChangeEvent, FC } from "react";
 import { connect } from "react-redux";
-import { showsFatchAction } from "./actions";
 import Show from "../modules/Show";
+import { showsFatchAction } from "./actions";
+
 import { showQuery, showsLoading, showsSelector } from "./selectors";
+
 import ShowRow from "./ShowRow";
 import { State } from "./store";
 type ShowListPageProps = {
