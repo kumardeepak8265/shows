@@ -1,16 +1,13 @@
 import { FC } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import CastPersonObg from "../modules/Cast";
-
-import { State } from "./store";
-
+import CastPersonObg from "../modules/Actor";
 type CastProps = {
   cast: CastPersonObg[];
 };
 const Cast: FC<CastProps> = ({ cast }) => {
-  // if (!cast) {
-  //   return <AiOutlineLoading3Quarters className="text-4xl " />;
-  // }
+  if (!cast) {
+    return <div>loading...</div>;
+  }
   return (
     <div className="bg-white m-4 flex flex-wrap">
       {cast.map((p) => (

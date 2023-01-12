@@ -3,29 +3,31 @@ import { AnyAction } from "redux";
 import {
   SHOWS_TYPES_FATCH,
   SHOWS_TYPES_FATCHED,
-  SHOW_CAST_TYPES_FATCH,
-  SHOW_CAST_TYPES_FATCHED,
+  SHOW_QUERY_FATCH,
   SHOW_TYPES_FATCHED,
-} from "./actions";
-export type showState = {
+} from "../actions/shows";
+import { SHOW_CAST_TYPES_FATCHED } from "../actions/actors";
+import ActorObj from "../modules/Actor";
+
+type State = {
   shows: { [id: number]: Show };
   query: string;
   againstQuery: { [showid: string]: number[] };
-  showsCast: Show[];
+  showsActorIds: { [showid: number]: number[] };
   loading: boolean;
 };
 
-export const initialShowsState: showState = {
+const initialShowsState: State = {
   shows: {},
   query: "",
   againstQuery: {},
-  showsCast: [],
+  showsActorIds: {},
   loading: false,
 };
 const showReducer = (state = initialShowsState, action: AnyAction) => {
   switch (action.type) {
     case SHOWS_TYPES_FATCH:
-      return { ...state, query: action.payload };
+      return { ...state, query: action.payload, loading: true };
 
     case SHOWS_TYPES_FATCHED:
       const { query, Shows }: { query: string; Shows: Show[] } = action.payload;
@@ -38,13 +40,25 @@ const showReducer = (state = initialShowsState, action: AnyAction) => {
         ...state,
         shows: { ...state.shows, ...Normalize },
         againstQuery: { ...state.againstQuery, [query]: ids },
+        loading: false,
       };
     case SHOW_TYPES_FATCHED:
       const show: Show = action.payload;
-      return { ...state, shows: { [show.id]: show } };
+      return {
+        ...state,
+        shows: { ...state.shows, [show.id]: show },
+      };
     case SHOW_CAST_TYPES_FATCHED:
-      const showCast = action.payload;
-      return { ...state, showsCast: [...showCast] };
+      const { showId, personAry } = action.payload as {
+        showId: number;
+        personAry: ActorObj[];
+      };
+      const actorIds = personAry.map((a: any) => a.id);
+      return {
+        ...state,
+        showsActorIds: { ...state.showsActorIds, [showId]: actorIds },
+      };
+
     default:
       return state;
   }

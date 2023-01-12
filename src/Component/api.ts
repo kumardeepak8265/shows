@@ -1,6 +1,6 @@
 import axios from "axios";
-import CastPersonObg from "../modules/Cast";
-import Cast from "../modules/Cast";
+import CastPersonObg from "../modules/Actor";
+import Cast from "../modules/Actor";
 import Show from "../modules/Show";
 
 export const getShows = async (query: string) => {
@@ -15,9 +15,9 @@ export const getShow = async (id: number) => {
   return res.data;
 };
 
-export const getShowsCast = async (id: number) => {
-  const res = await axios.get<{ r: CastPersonObg }>(
-    `https://api.tvmaze.com/shows/${id}/cast`
+export const getShowsCast = async (showid: number) => {
+  const response = await axios.get(
+    `https://api.tvmaze.com/shows/${showid}/cast`
   );
-  return res.data.map((r) => r.person);
+  return response.data;
 };

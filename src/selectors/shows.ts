@@ -1,6 +1,6 @@
 import { createSelector } from "reselect";
-import { State } from "./store";
-const showMapState = (s: State) => s.shows;
+import { State } from "../Component/store";
+export const showMapState = (s: State) => s.shows;
 export const showQuery = createSelector(showMapState, (shows) => shows.query);
 export const showState = createSelector(showMapState, (shows) => shows.shows);
 export const ids = createSelector(
@@ -11,11 +11,11 @@ export const showsSelector = createSelector(ids, showState, (ids, shows) =>
   ids.map((ids) => shows[+ids])
 );
 
-export const showsCastSelector = createSelector(
-  showMapState,
-  (shows) => shows.showsCast
-);
 export const showsLoading = createSelector(
   showMapState,
-  (shows) => shows.shows.loading
+  (shows) => shows.loading
+);
+export const showActorIds = createSelector(
+  showMapState,
+  (show) => show.showsActorIds
 );

@@ -1,12 +1,12 @@
 import { ChangeEvent, FC } from "react";
 import { connect } from "react-redux";
 import Show from "../modules/Show";
-import { showsFatchAction } from "./actions";
-
-import { showQuery, showsLoading, showsSelector } from "./selectors";
-
+import { showsFatchAction } from "../actions/shows";
+import { showQuery, showsLoading, showsSelector } from "../selectors/shows";
 import ShowRow from "./ShowRow";
 import { State } from "./store";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 type ShowListPageProps = {
   shows: Show[];
   query: string;
@@ -20,12 +20,13 @@ export const ShowListPage: FC<ShowListPageProps> = ({
   loading,
 }) => {
   if (!shows) {
-    return <div>loading...</div>;
+    return <AiOutlineLoading3Quarters className="animate-spin" />;
   }
+
   const onhandleClick = (event: ChangeEvent<HTMLInputElement>) => {
     fatchShow(event.target.value);
   };
-  console.log("loading", loading);
+
   return (
     <div className=" p-8  ">
       <div className="bg-white space-y-4 p-8">
@@ -35,14 +36,14 @@ export const ShowListPage: FC<ShowListPageProps> = ({
           value={query}
           onChange={onhandleClick}
         />
+        {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
         {shows.map((s) => (
-          <ShowRow key={s.id} show={s}></ShowRow>
+          <ShowRow key={s.id} query={query} show={s}></ShowRow>
         ))}
       </div>
     </div>
   );
 };
-ShowListPage.defaultProps = {};
 
 const mapDispatchToProps = {
   fatchShow: showsFatchAction,

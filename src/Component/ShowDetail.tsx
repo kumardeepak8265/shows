@@ -1,21 +1,27 @@
 import { FC, memo, useEffect } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import { withRouter, WithRouterProps } from "../hoc/WithRouter";
-import { showCastFatchAction, showFatchAction } from "./actions";
+import { showFatchAction, showsFatchAction } from "../actions/shows";
 import Show from "../modules/Show";
-import { showsCastSelector, showsLoading, showState } from "./selectors";
+import { showsSelector, showState } from "../selectors/shows";
 import { State } from "./store";
 import { BiArrowFromRight } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import CastPersonObg from "../modules/Cast";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import CastPersonObg from "../modules/Actor";
+import { showCastFatchAction } from "../actions/actors";
+import { showsCastSelector } from "../selectors/actors";
+import { LinkWithQuery } from "./LinkWithQuery";
 import Cast from "./Cast";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 type ShowDetailProps = {
   showcast: CastPersonObg[];
   show: Show;
   params: number;
+  dispatchQuery: (query: string) => void;
   dispatch: (id: number) => void;
   dispatchCast: (id: number) => void;
+  prev: string;
+  next: string;
 } & WithRouterProps;
 const ShowDetail: FC<ShowDetailProps> = ({
   showcast,
@@ -23,20 +29,27 @@ const ShowDetail: FC<ShowDetailProps> = ({
   params,
   dispatch,
   dispatchCast,
+  dispatchQuery,
+  prev,
+  next,
 }) => {
   const navigate = useNavigate();
+  const [search] = useSearchParams();
+  useEffect(() => {
+    const showId = +params.id;
+    dispatch(showId);
+    dispatchCast(showId);
+  }, [params.id]);
 
   useEffect(() => {
-    if (!show) {
-      console.log("change");
-      dispatch(+params.id);
-    } else if (show) {
-      dispatchCast(+params.id);
+    const query = search.get("q");
+    if (!show && query) {
+      dispatchQuery(query);
     }
-  }, [show, params.id]);
+  }, []);
 
   if (!show) {
-    return <div>...loading</div>;
+    return <AiOutlineLoading3Quarters className="animate-spin" />;
   }
   const { name, language, summary } = show;
 
@@ -60,23 +73,59 @@ const ShowDetail: FC<ShowDetailProps> = ({
           <div className="sm:ml-8 flex w-3/4 flex-col mt-4">
             <h1 className="sm:text-2xl font-bold">show name: {name}</h1>
             <h1 className="sm:text-2xl ">language:{language}</h1>
-            <h1>{summary}</h1>
+            <p dangerouslySetInnerHTML={{ __html: summary || "" }}></p>
+            <span className="flex grow"></span>
+            <div className="flex justify-between items-center p-4 ">
+              {prev ? (
+                <LinkWithQuery to={prev}>Prev</LinkWithQuery>
+              ) : (
+                <span></span>
+              )}
+              {next ? (
+                <LinkWithQuery to={next}>Next</LinkWithQuery>
+              ) : (
+                <span></span>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
       {<Cast cast={showcast}></Cast>}
     </div>
   );
 };
 ShowDetail.defaultProps = {};
 
-const mapStateToProps = (s: State, props: any) => ({
-  show: showState(s)[props.params.id],
-  showcast: showsCastSelector(s),
-});
+const mapStateToProps = (s: State, props: any) => {
+  const showId = props.params.id;
+  const shows = showsSelector(s);
+
+  let prevShow, nextShow;
+  for (let i = 0; i < shows.length; i++) {
+    const show = shows[i];
+    if (show.id == showId) {
+      if (i + 1 < shows.length) {
+        nextShow = shows[i + 1];
+      }
+      if (i >= 1) {
+        prevShow = shows[i - 1];
+      }
+      break;
+    }
+  }
+
+  return {
+    show: showState(s)[showId],
+    showcast: showsCastSelector(s)[showId],
+    prev: prevShow && `/shows/${prevShow.id}`,
+    next: nextShow && `/shows/${nextShow.id}`,
+  };
+};
 const mapDispatchToProps = {
   dispatch: showFatchAction,
   dispatchCast: showCastFatchAction,
+  dispatchQuery: showsFatchAction,
 };
 export default withRouter(
   connect(mapStateToProps, mapDispatchToProps)(memo(ShowDetail))

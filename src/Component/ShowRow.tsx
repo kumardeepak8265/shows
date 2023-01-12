@@ -3,13 +3,16 @@ import Show from "../modules/Show";
 import { Link, useNavigate } from "react-router-dom";
 type ShowRowProps = {
   show: Show;
+  query: string;
 };
-const ShowRow: FC<ShowRowProps> = ({ show }) => {
+const ShowRow: FC<ShowRowProps> = ({ show, query }) => {
   const navigate = useNavigate();
   const { id, name, language } = show;
+  const handleClick = () => navigate(`/shows/${id}?q=${query}`);
+
   return (
     <div
-      onClick={() => navigate("/shows/" + id)}
+      onClick={handleClick}
       className=" 
    cursor-pointer bg-gray-200 p-4 "
     >
