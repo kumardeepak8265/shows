@@ -1,5 +1,5 @@
 import { ChangeEvent, FC } from "react";
-import { connect } from "react-redux";
+import { connect, ConnectedProps, ConnectProps } from "react-redux";
 import Show from "../modules/Show";
 import { showsFatchAction } from "../actions/shows";
 import { showQuery, showsLoading, showsSelector } from "../selectors/shows";
@@ -7,12 +7,7 @@ import ShowRow from "./ShowRow";
 import { State } from "./store";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
-type ShowListPageProps = {
-  shows: Show[];
-  query: string;
-  fatchShow: (id: string) => void;
-  loading: boolean;
-};
+type ShowListPageProps = ReduxProps;
 export const ShowListPage: FC<ShowListPageProps> = ({
   shows,
   query,
@@ -26,10 +21,14 @@ export const ShowListPage: FC<ShowListPageProps> = ({
   const onhandleClick = (event: ChangeEvent<HTMLInputElement>) => {
     fatchShow(event.target.value);
   };
-
+  console.log("loading", loading);
   return (
     <div className=" p-8  ">
       <div className="bg-white space-y-4 p-8">
+        {!loading && <div className="h-8"></div>}
+        {loading && (
+          <div className="h-8">please wait data load ho raha hai</div>
+        )}
         <input
           placeholder="SEARCH"
           className="p-2 rounded-md border-2 border-gray-600 w-full"
@@ -37,9 +36,16 @@ export const ShowListPage: FC<ShowListPageProps> = ({
           onChange={onhandleClick}
         />
         {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
-        {shows.map((s) => (
-          <ShowRow key={s.id} query={query} show={s}></ShowRow>
-        ))}
+
+        {shows.length === 0 && (
+          <div className="mt-40 text-3xl font-bold">
+            🍿Search For Your Favorite MOVIE/SERIES🎬
+          </div>
+        )}
+        {shows &&
+          shows.map((s) => (
+            <ShowRow key={s.id} query={query} show={s}></ShowRow>
+          ))}
       </div>
     </div>
   );
@@ -53,4 +59,6 @@ const mapStateToProps = (s: State) => ({
   query: showQuery(s),
   loading: showsLoading(s),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(ShowListPage);
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type ReduxProps = ConnectedProps<typeof connector>;
+export default connector(ShowListPage);

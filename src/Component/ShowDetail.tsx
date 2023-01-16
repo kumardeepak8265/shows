@@ -1,5 +1,5 @@
 import { FC, memo, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import { withRouter, WithRouterProps } from "../hoc/WithRouter";
 import { showFatchAction, showsFatchAction } from "../actions/shows";
 import Show from "../modules/Show";
@@ -13,16 +13,9 @@ import { showsCastSelector } from "../selectors/actors";
 import { LinkWithQuery } from "./LinkWithQuery";
 import Cast from "./Cast";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-type ShowDetailProps = {
-  showcast: CastPersonObg[];
-  show: Show;
-  params: number;
-  dispatchQuery: (query: string) => void;
-  dispatch: (id: number) => void;
-  dispatchCast: (id: number) => void;
-  prev: string;
-  next: string;
-} & WithRouterProps;
+import { IoArrowBackOutline } from "react-icons/io5";
+import { IoArrowForwardOutline } from "react-icons/io5";
+type ShowDetailProps = ReduxProps & WithRouterProps;
 const ShowDetail: FC<ShowDetailProps> = ({
   showcast,
   show,
@@ -35,8 +28,8 @@ const ShowDetail: FC<ShowDetailProps> = ({
 }) => {
   const navigate = useNavigate();
   const [search] = useSearchParams();
+  const showId = +params.id;
   useEffect(() => {
-    const showId = +params.id;
     dispatch(showId);
     dispatchCast(showId);
   }, [params.id]);
@@ -77,12 +70,16 @@ const ShowDetail: FC<ShowDetailProps> = ({
             <span className="flex grow"></span>
             <div className="flex justify-between items-center p-4 ">
               {prev ? (
-                <LinkWithQuery to={prev}>Prev</LinkWithQuery>
+                <LinkWithQuery to={prev}>
+                  <IoArrowBackOutline />
+                </LinkWithQuery>
               ) : (
                 <span></span>
               )}
               {next ? (
-                <LinkWithQuery to={next}>Next</LinkWithQuery>
+                <LinkWithQuery to={next}>
+                  <IoArrowForwardOutline />
+                </LinkWithQuery>
               ) : (
                 <span></span>
               )}
@@ -91,20 +88,20 @@ const ShowDetail: FC<ShowDetailProps> = ({
         </div>
       </div>
 
-      {<Cast cast={showcast}></Cast>}
+      {showcast && <Cast cast={showcast}></Cast>}
     </div>
   );
 };
 ShowDetail.defaultProps = {};
 
-const mapStateToProps = (s: State, props: any) => {
-  const showId = props.params.id;
+const mapStateToProps = (s: State, props: WithRouterProps) => {
+  const showId = +props.params.id;
   const shows = showsSelector(s);
 
   let prevShow, nextShow;
   for (let i = 0; i < shows.length; i++) {
     const show = shows[i];
-    if (show.id == showId) {
+    if (show.id === showId) {
       if (i + 1 < shows.length) {
         nextShow = shows[i + 1];
       }
@@ -117,7 +114,7 @@ const mapStateToProps = (s: State, props: any) => {
 
   return {
     show: showState(s)[showId],
-    showcast: showsCastSelector(s)[showId],
+    showcast: showsCastSelector(s),
     prev: prevShow && `/shows/${prevShow.id}`,
     next: nextShow && `/shows/${nextShow.id}`,
   };
@@ -127,6 +124,6 @@ const mapDispatchToProps = {
   dispatchCast: showCastFatchAction,
   dispatchQuery: showsFatchAction,
 };
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(memo(ShowDetail))
-);
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type ReduxProps = ConnectedProps<typeof connector>;
+export default withRouter(connector(memo(ShowDetail)));

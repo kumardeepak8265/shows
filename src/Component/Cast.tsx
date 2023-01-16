@@ -8,6 +8,7 @@ const Cast: FC<CastProps> = ({ cast }) => {
   if (!cast) {
     return <div>loading...</div>;
   }
+
   return (
     <div className="bg-white m-4 flex flex-wrap">
       {cast.map((p) => (
