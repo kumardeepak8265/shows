@@ -1,23 +1,31 @@
-import CastPersonObg from "../modules/Actor";
+import { cast } from "../modules/Actor";
 import { AnyAction } from "redux";
-import { SHOW_CAST_TYPES_FATCHED } from "../actions/actors";
-import ActorObj from "../modules/Actor";
 import { schema, normalize } from "normalizr";
 import produce from "immer";
+import { SHOWS_TYPES_FATCHED, SHOW_DETAIL_FATCHED } from "../actions/shows";
+import { ShowsWithCast } from "../modules/Show";
+
 type State = {
-  showsCast: { [ids: number]: CastPersonObg };
+  showsCast: { [showIds: number]: cast[] };
 };
 const initialsState: State = {
   showsCast: {},
 };
 const Castreducer = (state = initialsState, action: AnyAction) => {
   switch (action.type) {
-    case SHOW_CAST_TYPES_FATCHED:
-      const { personAry } = action.payload as { personAry: ActorObj[] };
-      const actorEntity = new schema.Entity("cast");
-      const NormaliseData = normalize(personAry, [actorEntity]);
+    case SHOWS_TYPES_FATCHED:
       return produce(state, (draft) => {
-        draft.showsCast = NormaliseData.entities.cast || {};
+        const showArrayWithCast = action.payload
+          .ShowsWithCast as ShowsWithCast[];
+        const cast = showArrayWithCast.map((item) => item.cast);
+        const castEntity = new schema.Entity("cast");
+        const normalizeCast = normalize(cast, [castEntity]);
+        draft.showsCast = normalizeCast.entities.cast || {};
+      });
+    case SHOW_DETAIL_FATCHED:
+      const cast = action.payload.cast;
+      return produce(state, (draft) => {
+        draft.showsCast[cast.id] = cast;
       });
 
     default:

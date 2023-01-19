@@ -1,3 +1,5 @@
+import { cast } from "./Actor";
+
 type Show = {
   id: number;
   url: string;
@@ -16,3 +18,7 @@ type Show = {
   summary: string;
 };
 export default Show;
+export type ShowsWithCast = {
+  show: Show;
+  cast: cast;
+};

@@ -1,15 +1,15 @@
 import { FC, memo, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { withRouter, WithRouterProps } from "../hoc/WithRouter";
-import { showFatchAction, showsFatchAction } from "../actions/shows";
-import Show from "../modules/Show";
+import { showDetailFatchAction } from "../actions/shows";
+
 import { showsSelector, showState } from "../selectors/shows";
 import { State } from "./store";
 import { BiArrowFromRight } from "react-icons/bi";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import CastPersonObg from "../modules/Actor";
+
 import { showCastFatchAction } from "../actions/actors";
-import { showsCastSelector } from "../selectors/actors";
+import { showCast, showsCastSelector } from "../selectors/actors";
 import { LinkWithQuery } from "./LinkWithQuery";
 import Cast from "./Cast";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -20,26 +20,16 @@ const ShowDetail: FC<ShowDetailProps> = ({
   showcast,
   show,
   params,
-  dispatch,
-  dispatchCast,
-  dispatchQuery,
+  dispatchDetail,
   prev,
   next,
 }) => {
   const navigate = useNavigate();
-  const [search] = useSearchParams();
+
   const showId = +params.id;
   useEffect(() => {
-    dispatch(showId);
-    dispatchCast(showId);
+    dispatchDetail(showId);
   }, [params.id]);
-
-  useEffect(() => {
-    const query = search.get("q");
-    if (!show && query) {
-      dispatchQuery(query);
-    }
-  }, []);
 
   if (!show) {
     return <AiOutlineLoading3Quarters className="animate-spin" />;
@@ -88,7 +78,7 @@ const ShowDetail: FC<ShowDetailProps> = ({
         </div>
       </div>
 
-      {showcast && <Cast cast={showcast}></Cast>}
+      {showcast && <Cast cast={showcast[show.id].cast}></Cast>}
     </div>
   );
 };
@@ -114,15 +104,13 @@ const mapStateToProps = (s: State, props: WithRouterProps) => {
 
   return {
     show: showState(s)[showId],
-    showcast: showsCastSelector(s),
+    showcast: showCast(s),
     prev: prevShow && `/shows/${prevShow.id}`,
     next: nextShow && `/shows/${nextShow.id}`,
   };
 };
 const mapDispatchToProps = {
-  dispatch: showFatchAction,
-  dispatchCast: showCastFatchAction,
-  dispatchQuery: showsFatchAction,
+  dispatchDetail: showDetailFatchAction,
 };
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type ReduxProps = ConnectedProps<typeof connector>;

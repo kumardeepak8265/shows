@@ -15,7 +15,8 @@ export const showsLoading = createSelector(
   showMapState,
   (shows) => shows.loading
 );
-export const showActorIds = createSelector(
-  showMapState,
-  (show) => show.showsActorIds
-);
+
+
+
+
+

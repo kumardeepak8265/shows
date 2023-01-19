@@ -6,12 +6,14 @@ type CastProps = {
 };
 const Cast: FC<CastProps> = ({ cast }) => {
   if (!cast) {
-    return <div>loading...</div>;
+    return <div className="text-2xl">loading...</div>;
   }
-
+  if (cast.length == 0) {
+    return <div className="text-2xl font-bold">no cast this show</div>;
+  }
   return (
     <div className="bg-white m-4 flex flex-wrap">
-      {cast.map((p) => (
+      {cast?.map((p) => (
         <div className="flex " key={p.id}>
           <div className="p-4 m-4 w-40 border-2 border-gray-200 flex flex-col justify-center ">
             <div className="w-38">

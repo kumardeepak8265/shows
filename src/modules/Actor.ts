@@ -6,3 +6,7 @@ type ActorObj = {
   person: string;
 };
 export default ActorObj;
+export type cast = {
+  id: number;
+  cast: ActorObj[];
+};

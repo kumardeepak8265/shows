@@ -3,21 +3,30 @@ import CastPersonObg from "../modules/Actor";
 import Cast from "../modules/Actor";
 import Show from "../modules/Show";
 
-export const getShows = async (query: string) => {
-  const res = await axios.get<{ show: Show }[]>(
-    "https://api.tvmaze.com/search/shows?q=" + query
-  );
-  return res.data.map((d) => d.show);
+const BASE_URL = "https://api.tvmaze.com";
+
+export const getShowsWithCast = async (query: string) => {
+  const response = await axios.get(BASE_URL + "/search/shows?q=" + query);
+  const shows: Show[] = response.data.map((i: any) => {
+    return i.show;
+  });
+  const data = [];
+  for (let i = 0; i < shows.length; i++) {
+    data.push(getCastShow(shows[i]));
+  }
+
+  return Promise.all(data);
 };
 
-export const getShow = async (id: number) => {
-  const res = await axios.get("https://api.tvmaze.com/shows/" + id);
-  return res.data;
+export const getCastShow = async (show: Show) => {
+  const response = await axios.get(BASE_URL + "/shows/" + show.id + "/cast");
+  const cast = response.data.map((item: any) => item.person);
+  return { show, cast: { id: show.id, cast } };
 };
 
-export const getShowsCast = async (showid: number) => {
-  const response = await axios.get(
-    `https://api.tvmaze.com/shows/${showid}/cast`
-  );
-  return response.data;
+export const getShowDetail = async (id: number) => {
+  const showRes = await axios.get(BASE_URL + "/shows/" + id);
+  const show = showRes.data;
+  const showDetailWithcast = getCastShow(show);
+  return showDetailWithcast;
 };
